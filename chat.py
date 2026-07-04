@@ -1,4 +1,5 @@
 import uuid
+import os
 from flask import Flask, render_template_string, request, redirect, url_for
 from flask_socketio import SocketIO, emit
 
@@ -124,7 +125,6 @@ HTML_TEMPLATE = """
                             <th>Usuário</th>
                             <th>Ações</th>
                         </tr>
-                        {% set tem_banidos = false %}
                         {% for conta in todas_contas %}
                             {% if conta.banido %}
                             <tr>
@@ -196,7 +196,7 @@ HTML_TEMPLATE = """
                 });
 
                 function enviarSticker(emoji) {
-                    socket.emit('enviar_mensagem', { usuario: usuarioAtual, mensagem: emoji, is_admin: true });
+                    socket.emit('enviar_mensagem', { usuario: usuarioAtual, message: emoji, is_admin: true });
                 }
             </script>
 
@@ -360,7 +360,7 @@ def modificar_conta():
     return render_template_string(HTML_TEMPLATE, passo='admin_painel', msg=msg_retorno, todas_contas=contas)
 
 @socketio.on('enviar_mensagem')
-def (dados):
+def gerenciar_mensagem(dados):
     dados['id'] = str(uuid.uuid4())[:8]
     emit('receber_mensagem', dados, broadcast=True)
 
@@ -368,11 +368,7 @@ def (dados):
 def gerenciar_denuncia(dados):
     dados['id'] = str(uuid.uuid4())[:8]
     emit('notificar_denuncia', dados, broadcast=True)
-    
-    # Certifique-se de ter importado o "os" no topo ou logo acima do bloco de inicialização
-import os
 
 if __name__ == '__main__':
-    # Pega a porta do servidor de hospedagem ou usa 5000 como padrão local
     porta = int(os.environ.get("PORT", 5000))
     socketio.run(app, host='0.0.0.0', port=porta)
