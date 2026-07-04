@@ -1,5 +1,4 @@
 import uuid
-import os
 from flask import Flask, render_template_string, request, redirect, url_for
 from flask_socketio import SocketIO, emit
 
@@ -369,6 +368,9 @@ def (dados):
 def gerenciar_denuncia(dados):
     dados['id'] = str(uuid.uuid4())[:8]
     emit('notificar_denuncia', dados, broadcast=True)
+    
+    # Certifique-se de ter importado o "os" no topo ou logo acima do bloco de inicialização
+import os
 
 if __name__ == '__main__':
     # Pega a porta do servidor de hospedagem ou usa 5000 como padrão local
